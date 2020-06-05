@@ -93,22 +93,16 @@ void ClusterDestroy(PCluster curCluster)
 
 Result ClusterAddPoint(PCluster curCluster, PPoint curPoint)
 {
-	PElem tmpElem;
-	Result tmp1;
+	int minDist;
 	if (!curCluster || !curPoint ||
 		PointGetDimension(curPoint) != curCluster->dimSize ||
-		(tmp1 = ComparePoint((PElem)curPoint, (tmpElem  = ListGetFirst(curCluster->pointList))))) {
+		!(minDist = ClusterGetMinDistance(curCluster, curPoint))) {			// if minDist is zero, the is already in the cluster
 		return FAIL;
 	}
 
-	int minDist = ClusterGetMinDistance(curCluster, curPoint);
-	while (( tmpElem = ListGetNext(curCluster->pointList) )) {
-		if (ComparePoint(tmpElem, (PElem)curPoint))
-			return FAIL;
-	}
 	curCluster->minDist = (curCluster->minDist == -1) ? minDist : curCluster->minDist;
 	curCluster->minDist = MINIMUM(minDist, curCluster->minDist);
-	
+
 	return ListAdd(curCluster->pointList, (PElem)curPoint);
 }
 
